@@ -13,9 +13,9 @@ async def lifespan(app: FastAPI):
     print("🚀 Starting ReStockr API...")
     await init_db()
     print("✅ Database initialized")
-    
+
     yield
-    
+
     # Shutdown
     print("🛑 Shutting down ReStockr API...")
     await close_db()
@@ -53,16 +53,13 @@ async def root():
         "message": "Welcome to ReStockr Early Access API",
         "version": settings.VERSION,
         "docs": "/docs",
-        "health": "/api/v1/health"
+        "health": "/api/v1/health",
     }
 
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(
-        "app.main:app",
-        host="0.0.0.0",
-        port=8000,
-        reload=True,
-        log_level="info"
+        "app.main:app", host="0.0.0.0", port=8000, reload=True, log_level="info"
     )

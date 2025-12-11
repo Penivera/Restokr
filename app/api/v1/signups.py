@@ -14,16 +14,16 @@ router = APIRouter(prefix="/api/v1/signup")
     response_model=EarlyAccessSignupResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Early Access Signup",
-    description="Register for early access to ReStockr platform"
+    description="Register for early access to ReStockr platform",
 )
 async def create_signup(
     signup_data: EarlyAccessSignupCreate,
     db: DBSessionDep,
-    background_tasks: BackgroundTasks
+    background_tasks: BackgroundTasks,
 ) -> EarlyAccessSignup:
     """
     Create a new early access signup.
-    
+
     - **full_name**: User's full name
     - **email**: Valid email address (must be unique)
     - **phone_number**: Phone number (auto-prepends +234 for Nigerian numbers)
@@ -37,9 +37,9 @@ async def create_signup(
     if existing_email.scalar_one_or_none():
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="This email is already registered for early access"
+            detail="This email is already registered for early access",
         )
-    
+
     # Check if phone number already exists
     existing_phone = await db.execute(
         select(EarlyAccessSignup).where(
@@ -49,9 +49,9 @@ async def create_signup(
     if existing_phone.scalar_one_or_none():
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="This phone number is already registered for early access"
+            detail="This phone number is already registered for early access",
         )
-    
+
     # Create new signup
     try:
         new_signup = EarlyAccessSignup(
@@ -61,30 +61,30 @@ async def create_signup(
             role=signup_data.role,
             city=signup_data.city,
         )
-        
+
         db.add(new_signup)
         await db.flush()  # Flush to get the ID
         await db.refresh(new_signup)
-        
+
         # Send confirmation email in background
         background_tasks.add_task(
             send_confirmation_email,
             to_email=new_signup.email,
             full_name=new_signup.full_name,
-            role=new_signup.role.value
+            role=new_signup.role.value,
         )
-        
+
         return new_signup
-        
+
     except IntegrityError as e:
         await db.rollback()
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="A user with this email or phone number already exists"
+            detail="A user with this email or phone number already exists",
         )
     except Exception as e:
         await db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"An error occurred while processing your signup: {str(e)}"
+            detail=f"An error occurred while processing your signup: {str(e)}",
         )

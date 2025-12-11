@@ -9,6 +9,7 @@ from app.database import Base
 
 class UserRole(str, Enum):
     """User role enumeration."""
+
     CUSTOMER = "customer"
     VENDOR = "vendor"
     RIDER = "rider"
@@ -16,35 +17,40 @@ class UserRole(str, Enum):
 
 class EarlyAccessSignup(Base):
     """Early access signup model with geolocation support."""
-    
+
     __tablename__ = "early_access_signups"
-    
+
     # Primary key
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    
+
     # User information
     full_name: Mapped[str] = mapped_column(String(255), nullable=False)
-    email: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False)
-    phone_number: Mapped[str] = mapped_column(String(20), unique=True, index=True, nullable=False)
-    role: Mapped[UserRole] = mapped_column(SQLEnum(UserRole), nullable=False, index=True)
-    
+    email: Mapped[str] = mapped_column(
+        String(255), unique=True, index=True, nullable=False
+    )
+    phone_number: Mapped[str] = mapped_column(
+        String(20), unique=True, index=True, nullable=False
+    )
+    role: Mapped[UserRole] = mapped_column(
+        SQLEnum(UserRole), nullable=False, index=True
+    )
+
     # Location information
     city: Mapped[str] = mapped_column(String(100), default="Abuja", nullable=False)
     location: Mapped[Optional[str]] = mapped_column(
-        Geography(geometry_type='POINT', srid=4326),
+        Geography(geometry_type="POINT", srid=4326),
         nullable=True,
-        comment="GPS coordinates for future mapping features"
+        comment="GPS coordinates for future mapping features",
     )
-    
+
     # Metadata
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        default=datetime.utcnow,
-        nullable=False,
-        index=True
+        DateTime(timezone=True), default=datetime.utcnow, nullable=False, index=True
     )
     is_exported: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
-    email_confirmed: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
-    
+    email_confirmed: Mapped[bool] = mapped_column(
+        Boolean, default=False, nullable=False
+    )
+
     def __repr__(self) -> str:
         return f"<EarlyAccessSignup {self.email} - {self.role.value}>"

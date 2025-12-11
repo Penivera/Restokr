@@ -5,19 +5,15 @@ import aiosmtplib
 from app.config import settings
 
 
-async def send_confirmation_email(
-    to_email: str,
-    full_name: str,
-    role: str
-) -> bool:
+async def send_confirmation_email(to_email: str, full_name: str, role: str) -> bool:
     """
     Send confirmation email to early access signup.
-    
+
     Args:
         to_email: Recipient email address
         full_name: Recipient's full name
         role: User role (customer, vendor, rider)
-        
+
     Returns:
         True if email sent successfully, False otherwise
     """
@@ -25,14 +21,14 @@ async def send_confirmation_email(
     if not settings.SMTP_USER or not settings.SMTP_PASSWORD:
         print(f"SMTP not configured. Skipping email to {to_email}")
         return False
-    
+
     try:
         # Create message
         message = MIMEMultipart("alternative")
         message["Subject"] = f"Welcome to ReStockr Early Access - {role.capitalize()}"
         message["From"] = f"{settings.SMTP_FROM_NAME} <{settings.SMTP_FROM_EMAIL}>"
         message["To"] = to_email
-        
+
         # Create HTML content
         html_content = f"""
         <!DOCTYPE html>
@@ -85,11 +81,11 @@ async def send_confirmation_email(
         </body>
         </html>
         """
-        
+
         # Attach HTML content
         html_part = MIMEText(html_content, "html")
         message.attach(html_part)
-        
+
         # Send email
         await aiosmtplib.send(
             message,
@@ -99,10 +95,10 @@ async def send_confirmation_email(
             password=settings.SMTP_PASSWORD,
             start_tls=True,
         )
-        
+
         print(f"✅ Confirmation email sent to {to_email}")
         return True
-        
+
     except Exception as e:
         print(f"❌ Failed to send email to {to_email}: {str(e)}")
         return False
