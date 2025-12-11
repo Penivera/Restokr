@@ -1,0 +1,13 @@
+fastapi[all]
+uvicorn[standard]
+sqlalchemy[asyncio]
+asyncpg
+pydantic-settings
+pydantic-extra-types
+phonenumbers
+email-validator
+aiosmtplib
+python-multipart
+openpyxl
+alembic
+geoalchemy2
