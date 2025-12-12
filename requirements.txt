@@ -11,3 +11,7 @@ python-multipart
 openpyxl
 alembic
 geoalchemy2
+python-jose[cryptography]
+passlib[bcrypt]
+python-dateutil
+redis

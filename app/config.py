@@ -10,10 +10,11 @@ class Settings(BaseSettings):
     )
 
     # Project Info
-    PROJECT_NAME: str = Field(default="ReStockr Early Access API")
+    PROJECT_NAME: str = Field(default="ReStockr API")
     VERSION: str = Field(default="1.0.0")
+    API_PREFIX: str = Field(default="v1", description="API version prefix")
     DESCRIPTION: str = Field(
-        default="Hyper-local restocking platform - Early Access signup system"
+        default="Hyper-local restocking platform connecting customers, vendors, and riders"
     )
 
     # Database
@@ -26,6 +27,25 @@ class Settings(BaseSettings):
     # Admin Authentication
     ADMIN_USERNAME: str = Field(default="admin")
     ADMIN_PASSWORD: str = Field(default="changeme123")
+
+    # JWT Authentication
+    SECRET_KEY: str = Field(
+        default="your-secret-key-change-in-production-min-32-chars",
+        description="Secret key for JWT encoding",
+    )
+    ALGORITHM: str = Field(default="HS256", description="JWT algorithm")
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(
+        default=30, description="Access token expiry"
+    )
+    REFRESH_TOKEN_EXPIRE_DAYS: int = Field(
+        default=7, description="Refresh token expiry"
+    )
+
+    # Redis Configuration
+    REDIS_URL: str = Field(
+        default="redis://localhost:6379/0",
+        description="Redis connection URL (e.g., redis://localhost:6379/0 or redis://:password@localhost:6379/0)",
+    )
 
     # Email Configuration
     SMTP_HOST: str = Field(default="smtp.gmail.com")

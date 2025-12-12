@@ -1,8 +1,11 @@
 from typing import Optional
+import logging
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import aiosmtplib
 from app.config import settings
+
+logger = logging.getLogger(__name__)
 
 
 async def send_confirmation_email(to_email: str, full_name: str, role: str) -> bool:
@@ -19,7 +22,9 @@ async def send_confirmation_email(to_email: str, full_name: str, role: str) -> b
     """
     # Skip if SMTP not configured
     if not settings.SMTP_USER or not settings.SMTP_PASSWORD:
-        print(f"SMTP not configured. Skipping email to {to_email}")
+        logger.warning(
+            f"SMTP not configured. Skipping confirmation email to {to_email}"
+        )
         return False
 
     try:
@@ -96,9 +101,9 @@ async def send_confirmation_email(to_email: str, full_name: str, role: str) -> b
             start_tls=True,
         )
 
-        print(f"✅ Confirmation email sent to {to_email}")
+        logger.info(f"Confirmation email sent successfully to {to_email}")
         return True
 
     except Exception as e:
-        print(f"❌ Failed to send email to {to_email}: {str(e)}")
+        logger.error(f"Failed to send email to {to_email}: {str(e)}")
         return False

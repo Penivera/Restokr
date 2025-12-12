@@ -1,3 +1,3 @@
-from app.models.signup import EarlyAccessSignup
+from app.models.user import User
 
-__all__ = ["EarlyAccessSignup"]
+__all__ = ["User"]

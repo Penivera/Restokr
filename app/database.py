@@ -1,7 +1,10 @@
 from typing import AsyncGenerator
+import logging
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from sqlalchemy.orm import declarative_base
 from app.config import settings
+
+logger = logging.getLogger(__name__)
 
 # Create async engine
 engine = create_async_engine(
@@ -39,8 +42,20 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
 
 async def init_db() -> None:
     """Initialize database tables."""
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    try:
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+            logger.info("Database tables initialized successfully")
+    except Exception as e:
+        logger.error(f"Database connection failed: {e}")
+        logger.info(f"Database URL: {settings.DATABASE_URL}")
+        logger.warning("Quick fixes:")
+        logger.warning("  1. Check PostgreSQL is running: brew services list")
+        logger.warning("  2. Create database: createdb -U postgres restokr")
+        logger.warning(
+            "  3. Enable PostGIS: psql -U postgres -d restokr -c 'CREATE EXTENSION postgis;'"
+        )
+        raise
 
 
 async def close_db() -> None:

@@ -1,11 +1,11 @@
-from app.schemas.signup import (
-    EarlyAccessSignupCreate,
-    EarlyAccessSignupResponse,
-    SignupListResponse,
+from app.schemas.user import (
+    UserCreate,
+    UserResponse,
+    UserListResponse,
 )
 
 __all__ = [
-    "EarlyAccessSignupCreate",
-    "EarlyAccessSignupResponse",
-    "SignupListResponse",
+    "UserCreate",
+    "UserResponse",
+    "UserListResponse",
 ]

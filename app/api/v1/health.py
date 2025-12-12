@@ -1,10 +1,12 @@
 from datetime import datetime
+import logging
 from fastapi import APIRouter, status
 from sqlalchemy import text
 from app.api.deps import DBSessionDep
 from app.config import settings
 
 router = APIRouter(prefix="/api/v1/health")
+logger = logging.getLogger(__name__)
 
 
 @router.get(
@@ -34,10 +36,12 @@ async def health_check(db: DBSessionDep) -> dict:
         result = await db.execute(text("SELECT PostGIS_version()"))
         postgis_version = result.scalar_one()
         db_message = f"Connected (PostGIS: {postgis_version})"
+        logger.debug("Database health check passed")
 
     except Exception as e:
         db_status = "unhealthy"
         db_message = f"Database error: {str(e)}"
+        logger.error(f"Database health check failed: {str(e)}")
 
     return {
         "status": "healthy" if db_status == "healthy" else "degraded",

@@ -1,11 +1,11 @@
 from datetime import datetime
 from pydantic import BaseModel, EmailStr, Field, field_validator
 from pydantic_extra_types.phone_numbers import PhoneNumber
-from app.models.signup import UserRole
+from app.models.user import UserRole
 
 
-class EarlyAccessSignupCreate(BaseModel):
-    """Schema for creating early access signup."""
+class UserCreate(BaseModel):
+    """Schema for creating user."""
 
     full_name: str = Field(
         ..., min_length=2, max_length=255, description="Full name of the user"
@@ -16,6 +16,13 @@ class EarlyAccessSignupCreate(BaseModel):
     )
     role: UserRole = Field(..., description="User role: customer, vendor, or rider")
     city: str = Field(default="Abuja", max_length=100, description="City location")
+    password: str = Field(
+        ...,
+        min_length=8,
+        description="Password for the account",
+    )
+
+   
 
     @field_validator("phone_number", mode="before")
     @classmethod
@@ -58,14 +65,15 @@ class EarlyAccessSignupCreate(BaseModel):
                     "phone_number": "08012345678",
                     "role": "customer",
                     "city": "Abuja",
+                    "password": "Password123",
                 }
             ]
         }
     }
 
 
-class EarlyAccessSignupResponse(BaseModel):
-    """Schema for early access signup response."""
+class UserResponse(BaseModel):
+    """Schema for user response."""
 
     id: int
     full_name: str
@@ -79,13 +87,13 @@ class EarlyAccessSignupResponse(BaseModel):
     model_config = {"from_attributes": True}
 
 
-class SignupListResponse(BaseModel):
-    """Schema for paginated signup list."""
+class UserListResponse(BaseModel):
+    """Schema for paginated user list."""
 
     total: int
     page: int
     page_size: int
-    signups: list[EarlyAccessSignupResponse]
+    users: list[UserResponse]
 
 
 class ExportFormat(str):
